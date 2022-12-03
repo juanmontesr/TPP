@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Inicio</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="{{url_for('static', filename='css/estilos.css')}}">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-dark">
+		<h2 class="txt-white space">
+			Teen Pregnacy Predictor
+		</h2>
+	</nav>
+	<div class="contenct">
+		<div class="child-1">
+			<p style="margin-top: 40px">
+				Selecciona el barrio y el año en que deseas identificar
+				en que sectores son los hay mayor probabilidad de jovenes embarazadas
+				para el año seleccionado
+			</p>
+			<form class="form-1 bg-dark" method="POST" action="index">
+				<span style="color: white;">
+					FORMULARIO PREDICTOR
+				</span>
+				<br>
+				<br>
+				<input type="text" class="form-control" placeholder="Barrio" value="{{comuna}}">
+				<br>
+				<input type="text" class="form-control" placeholder="Año" value="{{agno}}">					
+				<br>
+				<button class="btn btn-primary" style="width: 100%;margin-top: 40px">PREDECIR</button>
+			<form>
+		</div>
+		<span id="result" hidden>{{resultado}}</span>
+		<span id="resultX" hidden>{{xVariable}}</span>
+		<span id="listAgno" hidden>{{lista}}</span>
+		<div class="child-1">
+			<canvas id="canvas" width="600" height="400">
+			  	
+			</canvas>
+		</div>
+		<div class="alert alert-warning" role="alert" id="alert">
+			<div>
+				Se estima para la comuna {{comuna}} un incremento de jovenes mujeres embarazadas.
+				<br>
+				Priorizar campañas de capacitación y educación sexual.
+			</div>
+		</div>
+	</div>
+	<script>
+		resultado = document.getElementById('result').textContent;
+		resultadoX = document.getElementById('resultX').textContent;
+		listAgno = document.getElementById('listAgno').textContent;
+		resultado=JSON.parse(resultado)
+		resultadoX = JSON.parse(resultadoX)
+		console.log(resultadoX);
+		console.log(resultado);
+		var xValues = resultadoX;
+		var yValues = resultado;
+		var barColors = ["red"];
+		new Chart("canvas", {
+			type: 'line',
+			data: {
+				labels:xValues,
+				datasets: [{
+					labels:"Jovenes Embarazadas",
+					fill: false,
+					lineTension: 0,
+					backgroundColor: "red",
+					borderColor: "blue",
+					color: "red",
+					data: yValues
+				}]
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						position: 'top',
+						text: 'Jovenes mujeres embarazadas'
+					},
+					title: {
+						display: true,
+						text: 'Jovenes mujeres embarazadas'
+					}
+				}
+			}
+		});
+		var sum =0;
+		for (let i=1;i<=resultado.length-1;i++) {
+			sum += resultado[i];
+			console.log(resultado[i]);
+		}
+		sum+=parseInt(listAgno);
+		prom=sum/(8+(resultado.length-1));
+		if (resultado[resultado.length-1]>prom) {
+			document.getElementById("alert").style.cssText = 'display:flex;'
+			setTimeout(() => {
+				document.getElementById("alert").style.cssText = 'display:none;'
+			}, 6000);
+		}
+	</script>
+</body>
+</html>
